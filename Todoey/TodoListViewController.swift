@@ -10,10 +10,17 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    let itemArray = ["Find a job", "Debug", "Learn Swift"]
+    var itemArray = ["Find a job", "Debug", "Learn Swift"]
+    
+    // to use the defaults, we need to create a UserDefaults object
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
 
     }
     
@@ -43,6 +50,36 @@ class TodoListViewController: UITableViewController {
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    //MARK - Add new items
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //what will happen once the user clicks the add item button on our UIAction
+            self.itemArray.append(textField.text!)
+            
+            // save the itemArray to the default key value pair
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
+            self.tableView.reloadData()
+        }
+        
+        // add text field in action
+        // name the text field as alertTextField
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+        
     }
     
 }
